@@ -1,0 +1,36 @@
+import pymap3d as pm
+import math
+from gpiozero import DistanceSensor
+from time import sleep
+
+print("Start")
+# The local coordinate origin(Point where Ultrasonic radar is placed)
+lat0 = -33.88894 # deg
+lon0 = 151.12768 # deg
+alt0 = 1  # meters
+print("Sensor node position :", lat0, lon0, alt0)
+# Drone Position
+lat1 = -33.88891 # deg
+lon1 = 151.12768 # deg
+alt1 = 1  # meters
+print("Drone position :", lat1, lon1, alt1)
+
+#Drone Local Position with relative to Sensor Node
+x = pm.geodetic2enu(lat1, lon1, alt1, lat0, lon0, alt0)
+sleep(1)
+sensor =  DistanceSensor(echo=18, trigger=17)
+
+while True:
+ # Object position detected by Radar
+    Dist = sensor.distance * 100
+    angle = 90
+    X = Dist * math.cos(math.radians(90 - angle))
+    Z = Dist * math.sin(math.radians(90 - angle))
+    Y = Dist * math.sin(math.radians(90 - angle))
+    sleep(1)
+#Relative Position and Distance Calculation
+    (x1, y1, z1) = x
+    dist = math.sqrt((x1 - X) ** 2 + (y1 - Y) ** 2 + (z1 - Z) ** 2)
+    sleep(1)
+    print("Distance between Drone and Obstacle:", dist)
+    print("End")
